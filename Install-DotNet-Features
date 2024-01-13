@@ -1,1 +1,7 @@
-I
+Install-DotNet-Features PowerShell Script
+
+#Note: first line needs internet
+
+Get-WindowsFeature | Where-Object Name -eq "NET-Framework-Features" | Where-Object InstallState -eq "Available" | Install-WindowsFeature
+
+Get-WindowsFeature | Where-Object Name -eq "NET-Framework-45-Features" | Where-Object InstallState -eq "Available" | Install-WindowsFeature
