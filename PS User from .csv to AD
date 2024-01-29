@@ -1,0 +1,36 @@
+# Import Active Directory module
+Import-Module ActiveDirectory
+
+# Define the CSV file path
+$csvFilePath = "C:\employees.csv"
+
+# Read CSV file
+$userData = Import-Csv $csvFilePath
+
+# Loop through each row in the CSV and create user accounts
+foreach ($user in $userData) {
+    # Set user parameters
+    $userParams = @{
+        'SamAccountName'        = $user.samAccountName
+        'UserPrincipalName'     = $user.UserPrincipalName
+        'Name'                  = $user.Name
+        'GivenName'             = $user.GivenName
+        'Surname'               = $user.Surname
+        'Description'           = $user.Description
+        'OfficePhone'           = $user.OfficePhone
+        'Department'            = $user.Department
+        'Path'                  = $user.Path
+        'Enabled'               = $true  # You can set this based on your needs
+        'AccountPassword'       = (ConvertTo-SecureString "Password1" -AsPlainText -Force)
+        'PasswordNeverExpires'  = $true
+    }
+
+    # Create the user account
+    $newUser = New-ADUser @userParams -PassThru
+
+    # Optionally, you can set additional attributes or add the user to groups
+    # Example: Set-ADUser -Identity $newUser.SamAccountName -Department $user.Department
+    # Example: Add-ADGroupMember -Identity 'GroupName' -Members $newUser.SamAccountName
+}
+
+Write-Host "User accounts created successfully with the password 'Password1' and passwords set to never expire."
