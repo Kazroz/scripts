@@ -6,4 +6,4 @@ Move-DatabasePath -Identity "yourdatabase" -EdbFilePath "E:\yourdatabase\yourdat
 New-MailboxDatabase -Server servername -Name "yourdatabase" -EdbFilePath E:\yourdatabase\yourdatabase.edb
 
 #Grabs an OU and puts enables the emailboxes and puts them in a database
-Get-User -OrganizationalUnit "Executive" | Enable-Mailbox -database "ExecutiveMDB"
+Get-User -OrganizationalUnit "yourOU" | Enable-Mailbox -database "yourdatabase"
