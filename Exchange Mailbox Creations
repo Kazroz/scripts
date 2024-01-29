@@ -7,3 +7,7 @@ New-MailboxDatabase -Server servername -Name "yourdatabase" -EdbFilePath E:\your
 
 #Grabs an OU and puts enables the emailboxes and puts them in a database
 Get-User -OrganizationalUnit "yourOU" | Enable-Mailbox -database "yourdatabase"
+
+The -Recursive parameter allows you to include users from nested OUs.
+Get-User -OrganizationalUnit "yourOU" -Recursive | Enable-Mailbox -Database "yourdatabase"
+
