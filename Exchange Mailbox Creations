@@ -11,3 +11,5 @@ Get-User -OrganizationalUnit "yourOU" | Enable-Mailbox -database "yourdatabase"
 The -Recursive parameter allows you to include users from nested OUs.
 Get-User -OrganizationalUnit "yourOU" -Recursive | Enable-Mailbox -Database "yourdatabase"
 
+#Pulls users from an OU and puts them in a Distribution Group
+New-DistributionGroup -Name "yourDG" -Members (Get-User -OrganizationalUnit "yourOU") -OrganizationalUnit "yourOU"
