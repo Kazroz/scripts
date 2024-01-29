@@ -1,0 +1,40 @@
+Create Organizational Unit within an Organizational Unit
+
+# Specify the distinguished name of the "Departments" OU
+$departmentsOU = "OU=Departments,DC=yourdomain,DC=com" # Replace with your actual domain
+
+# Array of Organizational Units to be created
+$organizationalUnits = @(
+    "Accounting",
+    "Admins",
+    "Analysts",
+    "Calgary",
+    "CustomerService",
+    "Denver",
+    "Executive",
+    "Finance",
+    "Government",
+    "HR",
+    "IT",
+    "Legal",
+    "Managers",
+    "Marketing",
+    "Portland",
+    "PR",
+    "Scheduling",
+    "Traders"
+)
+
+# Loop through each OU and create it inside the "Departments" OU
+foreach ($ou in $organizationalUnits) {
+    $ouPath = "OU=$ou,$departmentsOU"
+    
+    # Check if the OU already exists
+    if (-not (Get-ADOrganizationalUnit -Filter {Name -eq $ou} -SearchBase $departmentsOU -ErrorAction SilentlyContinue)) {
+        # Create the OU
+        New-ADOrganizationalUnit -Name $ou -Path $departmentsOU -Description "$ou Organizational Unit"
+        Write-Host "Created OU: $ouPath"
+    } else {
+        Write-Host "OU already exists: $ouPath"
+    }
+}
