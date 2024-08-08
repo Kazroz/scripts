@@ -1,0 +1,56 @@
+
+#PRINT OU GROUP 
+Get-ADGroup -Filter * -SearchBase "OU=OrgUnit,DC=YOURDOMAIN,DC=local" | Select-Object Name | Sort-Object Name
+
+
+#PRINT OU GROUP AND MEMBERS INSIDE THE GROUP
+$groups = Get-ADGroup -Filter * -SearchBase "OU=OrgUnit,DC=YOURDOMAIN,DC=local" | 
+    Sort-Object Name
+
+foreach ($group in $groups) {
+    Write-Output "----------------------------------------------
+Group: $($group.Name)"
+    $members = Get-ADGroupMember -Identity $group -ErrorAction SilentlyContinue | 
+        Select-Object -ExpandProperty Name |
+        Sort-Object |
+        Out-String -Stream |
+        ForEach-Object { $_.Trim() }
+    
+    if ($members) {
+        $membersString = $members -join ', '
+        Write-Output "  Members: $membersString"
+    } else {
+        Write-Output "  Members: None"
+    }
+}
+
+
+
+#TOO A CSV FILE
+
+$groups = Get-ADGroup -Filter * -SearchBase ""OU=OrgUnit,DC=YOURDOMAIN,DC=local" | 
+    Sort-Object Name
+
+$results = @()
+
+foreach ($group in $groups) {
+    $groupName = $group.Name
+    $members = Get-ADGroupMember -Identity $group -ErrorAction SilentlyContinue | 
+        Select-Object -ExpandProperty Name |
+        Sort-Object |
+        Out-String -Stream |
+        ForEach-Object { $_.Trim() }
+
+    if ($members) {
+        $membersString = $members -join ', '
+    } else {
+        $membersString = 'None'
+    }
+
+    $results += [PSCustomObject]@{
+        GroupName = $groupName
+        Members   = $membersString
+    }
+}
+
+$results | Export-Csv -Path "C:\temp\exampleoutput.csv" -NoTypeInformation
