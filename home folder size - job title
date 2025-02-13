@@ -1,0 +1,37 @@
+#This script pulls the size of a specific job titled users home directory size in GB from AD
+
+
+$jobTitle = "job title here"
+$ouDN = "OU=OU_Name,OU=OU_Name,OU=OU_Name,DC=domain,DC=local"
+$outputFile = "C:\temp\UserHomeDirectorySizes.csv"
+
+$users = Get-ADUser -Filter {Title -eq $jobTitle} -SearchBase $ouDN -Property HomeDirectory, GivenName, Surname
+
+$results = @()
+
+foreach ($user in $users) {
+    $homeDir = $user.HomeDirectory
+    $firstName = $user.GivenName
+    $lastName = $user.Surname
+
+    if (Test-Path $homeDir) {
+        # Get all files in the home directory and calculate the total size
+        $size = Get-ChildItem -Path $homeDir -Recurse -File | Measure-Object -Property Length -Sum
+        $sizeInGB = [math]::round($size.Sum / 1GB, 2) # Convert size to GB
+    } else {
+        $sizeInGB = "N/A"
+    }
+
+    # Add the result to the array
+    $results += [PSCustomObject]@{
+        FirstName     = $firstName
+        LastName      = $lastName
+        # HomeDirectory = $homeDir
+        TotalGB  = $sizeInGB
+    }
+}
+
+# Sort by Last Name and export to CSV
+$results | Sort-Object LastName | Export-Csv -Path $outputFile -NoTypeInformation
+
+Write-Host "Export complete. File saved to $outputFile"
